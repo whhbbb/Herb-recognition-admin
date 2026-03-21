@@ -1,7 +1,6 @@
 import { GitHubBanner, Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
-
 import {
   ErrorComponent,
   ThemedLayout,
@@ -9,7 +8,6 @@ import {
   useNotificationProvider,
 } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
-
 import routerProvider, {
   DocumentTitleHandler,
   NavigateToResource,
@@ -20,18 +18,27 @@ import { App as AntdApp } from "antd";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import { Header } from "./components/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
-import {
-  BlogPostCreate,
-  BlogPostEdit,
-  BlogPostList,
-  BlogPostShow,
-} from "./pages/blog-posts";
+import { mockDataProvider } from "./providers/mockDataProvider";
+
+// 导入已有页面
 import {
   CategoryCreate,
   CategoryEdit,
   CategoryList,
   CategoryShow,
 } from "./pages/categories";
+
+// 导入新增页面
+import {
+  HerbCreate,
+  HerbEdit,
+  HerbList,
+  HerbShow,
+} from "./pages/herbs/index";
+import {
+  FeedbackList,
+  FeedbackShow,
+} from "./pages/feedbacks/index";
 
 function App() {
   return (
@@ -42,18 +49,28 @@ function App() {
           <AntdApp>
             <DevtoolsProvider>
               <Refine
-                dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+                // 替换为你真实的后端地址，例如 http://localhost:3000
+                dataProvider={mockDataProvider}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerProvider}
                 resources={[
                   {
-                    name: "blog_posts",
-                    list: "/blog-posts",
-                    create: "/blog-posts/create",
-                    edit: "/blog-posts/edit/:id",
-                    show: "/blog-posts/show/:id",
+                    name: "herbs",
+                    list: "/herbs",
+                    create: "/herbs/create",
+                    edit: "/herbs/edit/:id",
+                    show: "/herbs/show/:id",
                     meta: {
+                      label: "中草药管理",
                       canDelete: true,
+                    },
+                  },
+                  {
+                    name: "feedbacks",
+                    list: "/feedbacks",
+                    show: "/feedbacks/show/:id",
+                    meta: {
+                      label: "AI识别反馈",
                     },
                   },
                   {
@@ -86,14 +103,21 @@ function App() {
                   >
                     <Route
                       index
-                      element={<NavigateToResource resource="blog_posts" />}
+                      element={<NavigateToResource resource="herbs" />}
                     />
-                    <Route path="/blog-posts">
-                      <Route index element={<BlogPostList />} />
-                      <Route path="create" element={<BlogPostCreate />} />
-                      <Route path="edit/:id" element={<BlogPostEdit />} />
-                      <Route path="show/:id" element={<BlogPostShow />} />
+                    {/* Herbs 路由 */}
+                    <Route path="/herbs">
+                      <Route index element={<HerbList />} />
+                      <Route path="create" element={<HerbCreate />} />
+                      <Route path="edit/:id" element={<HerbEdit />} />
+                      <Route path="show/:id" element={<HerbShow />} />
                     </Route>
+                    {/* Feedbacks 路由 */}
+                    <Route path="/feedbacks">
+                      <Route index element={<FeedbackList />} />
+                      <Route path="show/:id" element={<FeedbackShow />} />
+                    </Route>
+                    {/* Categories 路由 */}
                     <Route path="/categories">
                       <Route index element={<CategoryList />} />
                       <Route path="create" element={<CategoryCreate />} />
