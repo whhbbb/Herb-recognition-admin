@@ -26,6 +26,7 @@ type ClassRow = {
   name?: string;
   scientificName?: string;
   properties?: string;
+  meridian?: string;
   functions?: string[];
   usage?: string;
   cautions?: string[];
@@ -77,6 +78,7 @@ export const SampleClassList = () => {
       name: row.name,
       scientificName: row.scientificName,
       properties: row.properties,
+      meridian: row.meridian,
       functions: row.functions ?? [],
       usage: row.usage,
       cautions: row.cautions ?? [],
@@ -147,6 +149,8 @@ export const SampleClassList = () => {
           <Table.Column<ClassRow> title="类别 ID" dataIndex="herbId" key="herbId" />
           <Table.Column<ClassRow> title="英文名" dataIndex="herbName" key="herbName" />
           <Table.Column<ClassRow> title="中文名" dataIndex="name" key="name" />
+          <Table.Column<ClassRow> title="性味" dataIndex="properties" key="properties" width={160} ellipsis />
+          <Table.Column<ClassRow> title="归经" dataIndex="meridian" key="meridian" width={200} ellipsis />
           <Table.Column<ClassRow>
             title="主要功效"
             dataIndex="functions"
@@ -191,6 +195,9 @@ export const SampleClassList = () => {
           </Form.Item>
           <Form.Item name="properties" label="性味">
             <Input placeholder="例如：甘，平" />
+          </Form.Item>
+          <Form.Item name="meridian" label="归经">
+            <Input placeholder="例如：肝经、肾经" />
           </Form.Item>
           <Form.Item name="category" label="分类">
             <Input placeholder="例如：补虚药" />
