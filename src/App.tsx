@@ -13,32 +13,14 @@ import routerProvider, {
   NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
-import dataProvider from "@refinedev/simple-rest";
 import { App as AntdApp } from "antd";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
 import { Header } from "./components/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { mockDataProvider } from "./providers/mockDataProvider";
-
-// 导入已有页面
-import {
-  CategoryCreate,
-  CategoryEdit,
-  CategoryList,
-  CategoryShow,
-} from "./pages/categories";
-
-// 导入新增页面
-import {
-  HerbCreate,
-  HerbEdit,
-  HerbList,
-  HerbShow,
-} from "./pages/herbs/index";
-import {
-  FeedbackList,
-  FeedbackShow,
-} from "./pages/feedbacks/index";
+import { SampleClassList } from "./pages/sample-classes";
+import { SampleList } from "./pages/samples";
+import { TrainingJobList } from "./pages/training-jobs";
 
 function App() {
   return (
@@ -49,38 +31,29 @@ function App() {
           <AntdApp>
             <DevtoolsProvider>
               <Refine
-                // 替换为你真实的后端地址，例如 http://localhost:3000
                 dataProvider={mockDataProvider}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerProvider}
                 resources={[
                   {
-                    name: "herbs",
-                    list: "/herbs",
-                    create: "/herbs/create",
-                    edit: "/herbs/edit/:id",
-                    show: "/herbs/show/:id",
+                    name: "sample-classes",
+                    list: "/sample-classes",
                     meta: {
-                      label: "中草药管理",
-                      canDelete: true,
+                      label: "类别统计",
                     },
                   },
                   {
-                    name: "feedbacks",
-                    list: "/feedbacks",
-                    show: "/feedbacks/show/:id",
+                    name: "samples",
+                    list: "/samples",
                     meta: {
-                      label: "AI识别反馈",
+                      label: "样本管理",
                     },
                   },
                   {
-                    name: "categories",
-                    list: "/categories",
-                    create: "/categories/create",
-                    edit: "/categories/edit/:id",
-                    show: "/categories/show/:id",
+                    name: "training-jobs",
+                    list: "/training-jobs",
                     meta: {
-                      canDelete: true,
+                      label: "训练任务",
                     },
                   },
                 ]}
@@ -103,26 +76,16 @@ function App() {
                   >
                     <Route
                       index
-                      element={<NavigateToResource resource="herbs" />}
+                      element={<NavigateToResource resource="sample-classes" />}
                     />
-                    {/* Herbs 路由 */}
-                    <Route path="/herbs">
-                      <Route index element={<HerbList />} />
-                      <Route path="create" element={<HerbCreate />} />
-                      <Route path="edit/:id" element={<HerbEdit />} />
-                      <Route path="show/:id" element={<HerbShow />} />
+                    <Route path="/sample-classes">
+                      <Route index element={<SampleClassList />} />
                     </Route>
-                    {/* Feedbacks 路由 */}
-                    <Route path="/feedbacks">
-                      <Route index element={<FeedbackList />} />
-                      <Route path="show/:id" element={<FeedbackShow />} />
+                    <Route path="/samples">
+                      <Route index element={<SampleList />} />
                     </Route>
-                    {/* Categories 路由 */}
-                    <Route path="/categories">
-                      <Route index element={<CategoryList />} />
-                      <Route path="create" element={<CategoryCreate />} />
-                      <Route path="edit/:id" element={<CategoryEdit />} />
-                      <Route path="show/:id" element={<CategoryShow />} />
+                    <Route path="/training-jobs">
+                      <Route index element={<TrainingJobList />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

@@ -16,23 +16,23 @@ export const mockDataProvider: DataProvider = {
         return { data: [], total: 0 };
     },
     // 获取单个详情
-    getOne: async ({ resource, id }) => {
+    getOne: async ({ id }) => {
         const item = localHerbs.find((h) => h.id === id);
         return { data: item as any };
     },
     // 创建数据
-    create: async ({ resource, variables }) => {
+    create: async ({ variables }) => {
         const newHerb = { ...variables, id: Date.now().toString() };
         localHerbs.push(newHerb as any);
         return { data: newHerb as any };
     },
     // 更新数据
-    update: async ({ resource, id, variables }) => {
+    update: async ({ id, variables }) => {
         localHerbs = localHerbs.map((h) => (h.id === id ? { ...h, ...variables } : h));
         return { data: variables as any };
     },
     // 删除数据
-    deleteOne: async ({ resource, id }) => {
+    deleteOne: async ({ id }) => {
         localHerbs = localHerbs.filter((h) => h.id !== id);
         return { data: {} as any };
     },
