@@ -19,18 +19,19 @@ import { useEffect, useMemo, useState } from "react";
 import { API_BASE_URL, apiRequest } from "../../api/client";
 
 type ClassRow = {
+  id: string;
   herbId: string;
   herbName: string;
   count: number;
-  herbNameZh?: string;
-  pinyin?: string;
-  latinName?: string;
+  name?: string;
+  scientificName?: string;
   properties?: string;
-  meridian?: string;
-  effects?: string[];
+  functions?: string[];
   usage?: string;
-  cautions?: string;
+  cautions?: string[];
+  image?: string;
   description?: string;
+  category?: string;
 };
 
 type SampleMeta = {
@@ -73,15 +74,15 @@ export const SampleClassList = () => {
   const openEdit = (row: ClassRow) => {
     setEditing(row);
     form.setFieldsValue({
-      herbNameZh: row.herbNameZh,
-      pinyin: row.pinyin,
-      latinName: row.latinName,
+      name: row.name,
+      scientificName: row.scientificName,
       properties: row.properties,
-      meridian: row.meridian,
-      effects: row.effects ?? [],
+      functions: row.functions ?? [],
       usage: row.usage,
-      cautions: row.cautions,
+      cautions: row.cautions ?? [],
+      image: row.image,
       description: row.description,
+      category: row.category,
     });
   };
 
@@ -145,12 +146,12 @@ export const SampleClassList = () => {
         >
           <Table.Column<ClassRow> title="类别 ID" dataIndex="herbId" key="herbId" />
           <Table.Column<ClassRow> title="英文名" dataIndex="herbName" key="herbName" />
-          <Table.Column<ClassRow> title="中文名" dataIndex="herbNameZh" key="herbNameZh" />
+          <Table.Column<ClassRow> title="中文名" dataIndex="name" key="name" />
           <Table.Column<ClassRow>
             title="主要功效"
-            dataIndex="effects"
-            key="effects"
-            render={(effects?: string[]) => (effects && effects.length > 0 ? effects.join("、") : "-")}
+            dataIndex="functions"
+            key="functions"
+            render={(functions?: string[]) => (functions && functions.length > 0 ? functions.join("、") : "-")}
             ellipsis
             width={280}
           />
@@ -182,29 +183,29 @@ export const SampleClassList = () => {
         width={760}
       >
         <Form form={form} layout="vertical">
-          <Form.Item name="herbNameZh" label="中文名">
+          <Form.Item name="name" label="中文名">
             <Input placeholder="例如：枸杞子" />
           </Form.Item>
-          <Form.Item name="pinyin" label="拼音">
-            <Input placeholder="例如：Gou Qi Zi" />
-          </Form.Item>
-          <Form.Item name="latinName" label="拉丁名">
+          <Form.Item name="scientificName" label="学名">
             <Input />
           </Form.Item>
           <Form.Item name="properties" label="性味">
             <Input placeholder="例如：甘，平" />
           </Form.Item>
-          <Form.Item name="meridian" label="归经">
-            <Input placeholder="例如：肝、肾经" />
+          <Form.Item name="category" label="分类">
+            <Input placeholder="例如：补虚药" />
           </Form.Item>
-          <Form.Item name="effects" label="功效（输入后回车）">
+          <Form.Item name="functions" label="功效（输入后回车）">
             <Select mode="tags" tokenSeparators={[",", "，"]} />
           </Form.Item>
           <Form.Item name="usage" label="用法用量">
             <Input.TextArea rows={2} />
           </Form.Item>
-          <Form.Item name="cautions" label="注意事项/禁忌">
-            <Input.TextArea rows={2} />
+          <Form.Item name="cautions" label="注意事项/禁忌（输入后回车）">
+            <Select mode="tags" tokenSeparators={[",", "，"]} />
+          </Form.Item>
+          <Form.Item name="image" label="图片 URL">
+            <Input />
           </Form.Item>
           <Form.Item name="description" label="补充说明">
             <Input.TextArea rows={3} />
