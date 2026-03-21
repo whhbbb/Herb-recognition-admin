@@ -6,6 +6,7 @@ import {
   Card,
   Col,
   Form,
+  Image,
   Input,
   Modal,
   Row,
@@ -147,6 +148,15 @@ export const SampleClassList = () => {
           pagination={{ pageSize: 20, showSizeChanger: false }}
         >
           <Table.Column<ClassRow> title="类别 ID" dataIndex="herbId" key="herbId" />
+          <Table.Column<ClassRow>
+            title="代表图"
+            dataIndex="image"
+            key="image"
+            width={90}
+            render={(value?: string) =>
+              value ? <Image src={value} width={42} height={42} style={{ objectFit: "cover", borderRadius: 4 }} /> : "-"
+            }
+          />
           <Table.Column<ClassRow> title="英文名" dataIndex="herbName" key="herbName" />
           <Table.Column<ClassRow> title="中文名" dataIndex="name" key="name" />
           <Table.Column<ClassRow> title="性味" dataIndex="properties" key="properties" width={160} ellipsis />
