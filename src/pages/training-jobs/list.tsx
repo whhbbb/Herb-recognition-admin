@@ -8,6 +8,7 @@ import {
   Col,
   Form,
   InputNumber,
+  Progress,
   Row,
   Space,
   Statistic,
@@ -47,6 +48,23 @@ const statusColorMap: Record<JobStatus, string> = {
   running: "processing",
   succeeded: "success",
   failed: "error",
+};
+
+const getProgressPercent = (job: TrainingJob) => {
+  if (job.status === "succeeded") return 100;
+  if (job.status === "pending") return 0;
+  const regex = /epoch\s+(\d+)/gi;
+  let maxEpoch = 0;
+  let m: RegExpExecArray | null;
+  while ((m = regex.exec(job.log || "")) !== null) {
+    const value = Number(m[1]);
+    if (Number.isFinite(value) && value > maxEpoch) {
+      maxEpoch = value;
+    }
+  }
+  if (job.epochs <= 0) return 0;
+  const percent = Math.min(99, Math.round((maxEpoch / job.epochs) * 100));
+  return percent;
 };
 
 export const TrainingJobList = () => {
@@ -189,6 +207,24 @@ export const TrainingJobList = () => {
             dataIndex="status"
             key="status"
             render={(status: JobStatus) => <Tag color={statusColorMap[status]}>{status}</Tag>}
+          />
+          <Table.Column<TrainingJob>
+            title="进度"
+            key="progress"
+            width={180}
+            render={(_, row) => (
+              <Progress
+                percent={getProgressPercent(row)}
+                size="small"
+                status={
+                  row.status === "failed"
+                    ? "exception"
+                    : row.status === "succeeded"
+                      ? "success"
+                      : "active"
+                }
+              />
+            )}
           />
           <Table.Column<TrainingJob> title="样本数" dataIndex="datasetSize" key="datasetSize" />
           <Table.Column<TrainingJob> title="Epochs" dataIndex="epochs" key="epochs" />
