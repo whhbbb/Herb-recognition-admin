@@ -1,6 +1,10 @@
+const isLocalDevHost = (hostname: string) => {
+  return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+};
+
 export const API_BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() ||
-  "http://8.148.75.79:4000/api";
+  (isLocalDevHost(window.location.hostname) ? "http://127.0.0.1:4000/api" : "/api");
 
 export type ApiError = {
   message?: string | string[];

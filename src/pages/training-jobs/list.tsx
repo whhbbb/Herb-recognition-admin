@@ -4,6 +4,7 @@ import {
   Alert,
   Button,
   Card,
+  Checkbox,
   Col,
   Form,
   InputNumber,
@@ -59,6 +60,7 @@ export const TrainingJobList = () => {
     epochs: number;
     batchSize: number;
     validationSplit: number;
+    autoActivate: boolean;
   }>();
 
   const load = async () => {
@@ -141,7 +143,7 @@ export const TrainingJobList = () => {
             <Form
               layout="inline"
               form={form}
-              initialValues={{ epochs: 20, batchSize: 16, validationSplit: 0.2 }}
+              initialValues={{ epochs: 20, batchSize: 16, validationSplit: 0.2, autoActivate: false }}
             >
               <Form.Item
                 label="Epochs"
@@ -163,6 +165,9 @@ export const TrainingJobList = () => {
                 rules={[{ required: true, type: "number", min: 0.05, max: 0.5 }]}
               >
                 <InputNumber min={0.05} max={0.5} step={0.05} />
+              </Form.Item>
+              <Form.Item name="autoActivate" valuePropName="checked">
+                <Checkbox>训练成功后自动切换为前台模型</Checkbox>
               </Form.Item>
             </Form>
             <Button

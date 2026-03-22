@@ -20,6 +20,7 @@ import { ColorModeContextProvider } from "./contexts/color-mode";
 import { mockDataProvider } from "./providers/mockDataProvider";
 import { SampleClassList } from "./pages/sample-classes";
 import { SampleList } from "./pages/samples";
+import { ModelList } from "./pages/models";
 import { TrainingJobList } from "./pages/training-jobs";
 
 function App() {
@@ -56,6 +57,13 @@ function App() {
                       label: "训练任务",
                     },
                   },
+                  {
+                    name: "models",
+                    list: "/models",
+                    meta: {
+                      label: "模型管理",
+                    },
+                  },
                 ]}
                 options={{
                   syncWithLocation: true,
@@ -86,6 +94,9 @@ function App() {
                     </Route>
                     <Route path="/training-jobs">
                       <Route index element={<TrainingJobList />} />
+                    </Route>
+                    <Route path="/models">
+                      <Route index element={<ModelList />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
