@@ -1,6 +1,6 @@
 import { BarChartOutlined, CheckCircleOutlined, ReloadOutlined } from "@ant-design/icons";
 import { List } from "@refinedev/antd";
-import { Alert, Button, Card, Image, Modal, Space, Table, Tag, Typography } from "antd";
+import { Alert, Button, Card, Image, message, Modal, Space, Table, Tag, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { API_BASE_URL, apiRequest } from "../../api/client";
 
@@ -16,13 +16,23 @@ type EvaluationMetrics = {
   evaluatedAt?: string;
 };
 
+type EvaluationStatus = {
+  status?: "running" | "completed" | "failed";
+  startedAt?: string;
+  finishedAt?: string;
+  error?: string;
+};
+
 type ModelVersion = {
   id: string;
   name: string;
   version: string;
   framework: string;
   artifactUrl: string;
-  metrics: (Record<string, unknown> & { evaluation?: EvaluationMetrics }) | null;
+  metrics: (Record<string, unknown> & {
+    evaluation?: EvaluationMetrics;
+    evaluationStatus?: EvaluationStatus;
+  }) | null;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -40,6 +50,19 @@ const formatPercent = (value: unknown) => {
     return "-";
   }
   return `${(value * 100).toFixed(2)}%`;
+};
+
+const renderEvaluationStatus = (status?: EvaluationStatus) => {
+  if (status?.status === "running") {
+    return <Tag color="processing">评估中</Tag>;
+  }
+  if (status?.status === "completed") {
+    return <Tag color="success">已完成</Tag>;
+  }
+  if (status?.status === "failed") {
+    return <Tag color="error">失败</Tag>;
+  }
+  return <Tag>未评估</Tag>;
 };
 
 export const ModelList = () => {
@@ -85,6 +108,7 @@ export const ModelList = () => {
     setError("");
     try {
       await apiRequest(`/models/${id}/evaluate`, { method: "POST" });
+      message.success("评估任务已提交，请稍后刷新查看结果");
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "模型评估失败");
@@ -132,6 +156,11 @@ export const ModelList = () => {
             title="best_val_acc"
             key="bestValAcc"
             render={(_, row) => formatMetric(row.metrics?.best_val_acc)}
+          />
+          <Table.Column<ModelVersion>
+            title="评估状态"
+            key="evalStatus"
+            render={(_, row) => renderEvaluationStatus(row.metrics?.evaluationStatus)}
           />
           <Table.Column<ModelVersion>
             title="Top-1"
@@ -184,39 +213,43 @@ export const ModelList = () => {
           <Table.Column<ModelVersion>
             title="操作"
             key="actions"
-            render={(_, row) => (
-              <Space>
-                {row.isActive ? (
-                  <Button type="default" icon={<CheckCircleOutlined />} disabled size="small">
-                    已激活
-                  </Button>
-                ) : (
+            render={(_, row) => {
+              const isRunning = row.metrics?.evaluationStatus?.status === "running";
+              return (
+                <Space>
+                  {row.isActive ? (
+                    <Button type="default" icon={<CheckCircleOutlined />} disabled size="small">
+                      已激活
+                    </Button>
+                  ) : (
+                    <Button
+                      type="primary"
+                      size="small"
+                      loading={activatingId === row.id}
+                      onClick={() => void activate(row.id)}
+                    >
+                      设为前台模型
+                    </Button>
+                  )}
                   <Button
-                    type="primary"
                     size="small"
-                    loading={activatingId === row.id}
-                    onClick={() => void activate(row.id)}
+                    icon={<BarChartOutlined />}
+                    loading={evaluatingId === row.id || isRunning}
+                    disabled={isRunning}
+                    onClick={() => void evaluate(row.id)}
                   >
-                    设为前台模型
+                    {isRunning ? "评估中" : "执行评估"}
                   </Button>
-                )}
-                <Button
-                  size="small"
-                  icon={<BarChartOutlined />}
-                  loading={evaluatingId === row.id}
-                  onClick={() => void evaluate(row.id)}
-                >
-                  执行评估
-                </Button>
-                <Button
-                  size="small"
-                  disabled={!row.metrics?.evaluation}
-                  onClick={() => setMatrixModel(row)}
-                >
-                  混淆矩阵
-                </Button>
-              </Space>
-            )}
+                  <Button
+                    size="small"
+                    disabled={!row.metrics?.evaluation}
+                    onClick={() => setMatrixModel(row)}
+                  >
+                    混淆矩阵
+                  </Button>
+                </Space>
+              );
+            }}
           />
         </Table>
 
