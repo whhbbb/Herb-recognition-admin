@@ -111,7 +111,7 @@ export const ModelList = () => {
 
         <Card size="small">
           <Typography.Text type="secondary">
-            在此页面选择“前台识别”使用的模型，也可以对已登记模型执行验证集/测试集评估，生成 Top-K、宏平均 F1、推理耗时和混淆矩阵。
+            在此页面选择“前台识别”使用的模型，也可以对已登记模型执行评估，优先使用测试集/验证集；若旧数据尚未划分，则使用训练集兜底并记录实际评估划分。
           </Typography.Text>
         </Card>
 
@@ -159,6 +159,11 @@ export const ModelList = () => {
               const value = row.metrics?.evaluation?.avgInferMs;
               return typeof value === "number" && Number.isFinite(value) ? `${value.toFixed(1)} ms` : "-";
             }}
+          />
+          <Table.Column<ModelVersion>
+            title="评估集"
+            key="evalSplit"
+            render={(_, row) => formatMetric(row.metrics?.evaluation?.split)}
           />
           <Table.Column<ModelVersion>
             title="train/val"
