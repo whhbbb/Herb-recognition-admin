@@ -65,10 +65,6 @@ export const ModelList = () => {
 
   useEffect(() => {
     void load();
-    const timer = window.setInterval(() => {
-      void load();
-    }, 10000);
-    return () => window.clearInterval(timer);
   }, []);
 
   const activate = async (id: string) => {
